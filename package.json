@@ -1,0 +1,13 @@
+{
+  "name": "bots-spike",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Trading Stategy Social Media Bots",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "puppeteer": "^24.7.2"
+  }
+}
