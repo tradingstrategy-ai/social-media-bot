@@ -1,6 +1,7 @@
 import fs from 'fs';
-import { getTimestamp } from './lib/timestamp.js';
-import { takeScreenshot } from './lib/screenshot.js';
+import type { PerformanceSummary } from './lib/types.ts';
+import { getTimestamp } from './lib/timestamp.ts';
+import { takeScreenshot } from './lib/screenshot.ts';
 
 if (process.argv.length !== 3) {
   console.log('usage: node index.js [strategyId]');
@@ -12,7 +13,7 @@ const strategyId = process.argv[2]
 const timestamp = getTimestamp();
 const outfile = `output/${strategyId}_${timestamp}.png`;
 
-const performanceTrigger = await checkPerformance();
+const performanceTrigger = await checkPerformance(baseUrl, strategyId);
 
 if (performanceTrigger) {
   console.log('Social media post triggered:');
@@ -22,9 +23,9 @@ if (performanceTrigger) {
   console.log('No social media post triggered');
 }
 
-async function checkPerformance() {
+async function checkPerformance(baseUrl: string, stragegyId: string) {
   const resp = await fetch(`${baseUrl}/strategies/${strategyId}/period-performance`);
-  const summaries = await resp.json();
+  const summaries = (await resp.json()) as PerformanceSummary[];
 
   // sort by performance, best performing first
   summaries.sort((a, b) => b.performance - a.performance);
@@ -34,7 +35,7 @@ async function checkPerformance() {
   return bestTimeframe.performance > 0.05 ? bestTimeframe : undefined;
 }
 
-async function takeStrategyScreenshot(baseUrl, strategyId, outfile) {
+async function takeStrategyScreenshot(baseUrl: string, strategyId: string, outfile: string) {
   try {
     const screenshot = await takeScreenshot(`${baseUrl}/strategies/${strategyId}`, '.chart-container');
     fs.writeFileSync(outfile, screenshot);

@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
 
-export async function takeScreenshot(url, selector) {
+export async function takeScreenshot(url: string, selector: string) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
@@ -17,4 +17,3 @@ export async function takeScreenshot(url, selector) {
     await browser?.close();
   }
 }
-
