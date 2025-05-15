@@ -12,10 +12,34 @@ const strategyId = process.argv[2]
 const timestamp = getTimestamp();
 const outfile = `output/${strategyId}_${timestamp}.png`;
 
-try {
-  const screenshot = await takeScreenshot(`${baseUrl}/strategies/${strategyId}`, '.chart-container');
-  fs.writeFileSync(outfile, screenshot);
-} catch (error) {
-  console.error('Error taking screenshot:', error);
-  process.exit(1);
+const performanceTrigger = await checkPerformance();
+
+if (performanceTrigger) {
+  console.log('Social media post triggered:');
+  console.log(JSON.stringify(performanceTrigger));
+  takeStrategyScreenshot(baseUrl, strategyId, outfile);
+} else {
+  console.log('No social media post triggered');
+}
+
+async function checkPerformance() {
+  const resp = await fetch(`${baseUrl}/strategies/${strategyId}/period-performance`);
+  const summaries = await resp.json();
+
+  // sort by performance, best performing first
+  summaries.sort((a, b) => b.performance - a.performance);
+
+  // get the best performing timeframe; return it if over threshold
+  const bestTimeframe = summaries[0];
+  return bestTimeframe.performance > 0.05 ? bestTimeframe : undefined;
+}
+
+async function takeStrategyScreenshot(baseUrl, strategyId, outfile) {
+  try {
+    const screenshot = await takeScreenshot(`${baseUrl}/strategies/${strategyId}`, '.chart-container');
+    fs.writeFileSync(outfile, screenshot);
+  } catch (error) {
+    console.error('Error taking screenshot:', error);
+    process.exit(1);
+  }
 }
