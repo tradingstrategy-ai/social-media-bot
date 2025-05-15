@@ -1,21 +1,21 @@
-import { takeScreenshot } from './lib/screenshot.js';
 import fs from 'fs';
+import { getTimestamp } from './lib/timestamp.js';
+import { takeScreenshot } from './lib/screenshot.js';
 
-const outputFile = process.argv[2];
-
-if (!outputFile) {
-  console.log('usage: node index.js [outputFile]');
-  process.exit(0);
+if (process.argv.length !== 3) {
+  console.log('usage: node index.js [strategyId]');
+  process.exit(1);
 }
 
-takeChartScreenshot(outputFile);
+const baseUrl = process.env.TS_BASE_URL ?? 'http://localhost:5173';
+const strategyId = process.argv[2]
+const timestamp = getTimestamp();
+const outfile = `output/${strategyId}_${timestamp}.png`;
 
-async function takeChartScreenshot(outputFile) {
-  try {
-    const screenshot = await takeScreenshot('http://localhost:5173/strategies/base-ath', '.chart-container');
-    fs.writeFileSync(outputFile, screenshot);
-  } catch (error) {
-    console.error('Error taking screenshot:', error);
-    process.exit(1);
-  }
+try {
+  const screenshot = await takeScreenshot(`${baseUrl}/strategies/${strategyId}`, '.chart-container');
+  fs.writeFileSync(outfile, screenshot);
+} catch (error) {
+  console.error('Error taking screenshot:', error);
+  process.exit(1);
 }
