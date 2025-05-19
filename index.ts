@@ -1,4 +1,4 @@
-import fs from 'fs';
+import 'dotenv/config';
 import type { PerformanceSummary } from './lib/types.ts';
 import { getTimestamp } from './lib/timestamp.ts';
 import { takeScreenshot } from './lib/screenshot.ts';

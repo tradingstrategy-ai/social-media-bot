@@ -5,12 +5,15 @@
   "description": "Trading Stategy Social Media Bots",
   "main": "index.ts",
   "scripts": {
+    "dev": "NODE_ENV=development node index.ts",
+    "start": "NODE_ENV=production node index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"**/*.{js,ts,json}\""
   },
   "dependencies": {
+    "dotenv": "^16.5.0",
     "imagekit": "^6.0.0",
     "puppeteer": "^24.8.2"
   },
