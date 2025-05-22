@@ -5,8 +5,8 @@
   "description": "Trading Stategy Social Media Bots",
   "main": "index.ts",
   "scripts": {
-    "dev": "NODE_ENV=development node index.ts",
-    "start": "NODE_ENV=production node index.ts",
+    "dev": "NODE_ENV=development node --disable-warning=ExperimentalWarning index.ts",
+    "start": "NODE_ENV=production node --disable-warning=ExperimentalWarning index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
