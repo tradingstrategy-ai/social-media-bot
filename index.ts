@@ -1,55 +1,46 @@
 import 'dotenv/config';
-import type { PerformanceSummary } from './lib/types.ts';
-import { getTimestamp } from './lib/timestamp.ts';
+import { checkStrategyTriggers } from './lib/strategy-triggers.ts';
 import { takeScreenshot } from './lib/screenshot.ts';
 import { uploadImage } from './lib/upload-image.ts';
+import { getTimestamp } from './lib/date.ts';
 import { postToFarcaster } from './lib/farcaster.ts';
 
+// check command line arg length
 if (process.argv.length !== 3) {
 	console.log('usage: node index.js [strategyId]');
 	process.exit(1);
 }
 
+// define url and strategy constants
 const baseUrl = process.env.TS_BASE_URL ?? 'http://localhost:5173';
 const strategyId = process.argv[2];
-const timestamp = getTimestamp();
 
-const performanceTrigger = await checkPerformance(baseUrl, strategyId);
+// check for any social media triggers and abort if none
+const trigger = await checkStrategyTriggers(baseUrl, strategyId);
 
-if (!performanceTrigger) {
+if (!trigger) {
 	console.log('No social media post triggered');
 	process.exit(0);
 }
 
 console.log('Social media post triggered:');
-console.log(JSON.stringify(performanceTrigger));
+console.log(JSON.stringify(trigger));
 
 // request chart screenshot from frontend
 const screenshot = await takeScreenshot(`${baseUrl}/strategies/${strategyId}`, '.chart-container');
 
 // upload screenshot to image hosting service
-const { url } = await uploadImage(`${strategyId}_${timestamp}.png`, screenshot);
+const { url } = await uploadImage(`${strategyId}_${getTimestamp()}.png`, screenshot);
 
 // compose Farcaster post text
-const pctString = performanceTrigger.performance.toLocaleString('en-US', {
+const pctString = trigger.performance.toLocaleString('en-US', {
 	style: 'percent',
 	minimumFractionDigits: 1
 });
-const text = `Strategy ${strategyId} is up ${pctString} in the past ${performanceTrigger.interval}`;
+const text = `Strategy ${strategyId} is up ${pctString} in the past ${trigger.interval}`;
 
-// submit the Farcaster post (with text and image)
+// submit the Farcaster post (text and image)
 const cast = await postToFarcaster({ text, embeds: [{ url }] });
 
+// output details of successful cast
 console.log(cast);
-
-async function checkPerformance(baseUrl: string, strategyId: string) {
-	const resp = await fetch(`${baseUrl}/strategies/${strategyId}/period-performance`);
-	const summaries = (await resp.json()) as PerformanceSummary[];
-
-	// sort by performance, best performing first
-	summaries.sort((a, b) => b.performance - a.performance);
-
-	// get the best performing timeframe; return it if over threshold
-	const bestTimeframe = summaries[0];
-	return bestTimeframe.performance > 0.05 ? bestTimeframe : undefined;
-}
