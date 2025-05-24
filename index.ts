@@ -26,6 +26,9 @@ if (!trigger) {
 console.log('Social media post triggered:');
 console.log(JSON.stringify(trigger));
 
+// exit early for now
+process.exit(0);
+
 // request chart screenshot from frontend
 const screenshot = await takeScreenshot(`${baseUrl}/strategies/${strategyId}`, '.chart-container');
 

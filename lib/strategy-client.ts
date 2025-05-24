@@ -15,5 +15,9 @@ export async function getClosedPositions(id: string, from: Date, to: Date) {
 
 	return positions
 		.filter((p) => p.closed_at >= fromTs && p.closed_at < toTs)
-		.sort((a, b) => a.closed_at - b.closed_at);
+		.sort((a, b) => a.closed_at - b.closed_at)
+		.map((p: any) => {
+			const stats = state.stats.positions[p.position_id].at(-1);
+			return { ...p, stats };
+		});
 }
