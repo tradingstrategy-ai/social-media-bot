@@ -14,8 +14,14 @@ export async function checkStrategyTriggers(
 	baseUrl: string,
 	strategyId: string
 ): Promise<StrategyTrigger | undefined> {
-	const closedPositionSummary = await checkClosedPositions(baseUrl, strategyId, new Date());
-	return closedPositionSummary ?? checkPerformance(baseUrl, strategyId);
+	// check triggers in parallel
+	const possibleTriggers = await Promise.all([
+		checkClosedPositions(baseUrl, strategyId, new Date()),
+		checkPerformance(baseUrl, strategyId)
+	]);
+
+	// return the first successful trigger
+	return possibleTriggers.find((t) => t);
 }
 
 // returns most profitable closed position (summary) from last hour
