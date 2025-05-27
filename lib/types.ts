@@ -11,9 +11,20 @@ export type PositionSummary = {
 	symbol: string;
 };
 
+export type ClosedPositionTrigger = PositionSummary & {
+	trigger: 'closed_position';
+};
+
 export type PerformanceSummary = {
 	interval: `${number}${'m' | 'h' | 'd'}`;
 	start: string;
 	end: string;
 	performance: number;
+	annualizedReturn: number;
 };
+
+export type PeriodPerformanceTrigger = PerformanceSummary & {
+	trigger: 'period_performance';
+};
+
+export type StrategyTrigger = ClosedPositionTrigger | PeriodPerformanceTrigger;
