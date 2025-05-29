@@ -1,4 +1,4 @@
-const baseUrl = 'https://api.neynar.com/v2/farcaster';
+const apiUrl = 'https://api.neynar.com/v2/farcaster';
 
 const signer_uuid = process.env.NEYNAR_SIGNER_UUID;
 
@@ -13,7 +13,7 @@ export interface CastParams {
 }
 
 export async function postToFarcaster(params: CastParams) {
-	const response = await fetch(`${baseUrl}/cast`, {
+	const response = await fetch(`${apiUrl}/cast`, {
 		method: 'POST',
 		headers,
 		body: JSON.stringify({ signer_uuid, ...params })

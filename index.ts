@@ -9,19 +9,18 @@ if (process.argv.length !== 3) {
 	process.exit(1);
 }
 
-// define url and strategy constants
-const baseUrl = process.env.TS_BASE_URL ?? 'http://localhost:5173';
+// define strategyId from command arg
 const strategyId = process.argv[2];
 
 // check for any social media triggers and abort if none
-const trigger = await checkStrategyTriggers(baseUrl, strategyId);
+const trigger = await checkStrategyTriggers(strategyId);
 
 if (!trigger) {
 	console.log('No social media post triggered');
 	process.exit(0);
 }
 
-const post = await render(baseUrl, strategyId, trigger);
+const post = await render(strategyId, trigger);
 
 // log rendered text and exit early for now
 console.log(post);

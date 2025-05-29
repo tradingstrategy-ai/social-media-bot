@@ -1,10 +1,18 @@
+const baseUrl = process.env.TS_BASE_URL ?? 'http://localhost:5173';
+
+export function getStrategyUrl(strategyId: string, path: string | undefined) {
+	let url = `${baseUrl}/strategies/${strategyId}`;
+	if (path) url += `/${path}`;
+	return url;
+}
+
 export async function fetchStrategyData<T>(
-	baseUrl: string,
 	strategyId: string,
-	route: string,
+	path: string,
 	searchParams: Record<string, any> = {}
 ) {
-	const urlParams = new URLSearchParams(searchParams);
-	const resp = await fetch(`${baseUrl}/strategies/${strategyId}/${route}?${urlParams}`);
+	const url = getStrategyUrl(strategyId, path);
+	const params = new URLSearchParams(searchParams);
+	const resp = await fetch(`${url}?${params}`);
 	return resp.json() as Promise<T>;
 }

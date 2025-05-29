@@ -3,6 +3,7 @@ import { formatPercent } from './formatters.ts';
 import { takeScreenshot } from './screenshot.ts';
 import { uploadImage } from './upload-image.ts';
 import { getTimestamp } from './date.ts';
+import { getStrategyUrl } from './strategy-client.ts';
 
 type Template = (
 	strategyId: string,
@@ -24,7 +25,6 @@ type RenderedPost = {
  * Render a strategy trigger using the matching template.
  */
 export async function render(
-	baseUrl: string,
 	strategyId: string,
 	{ trigger, ...payload }: StrategyTrigger
 ): Promise<RenderedPost> {
@@ -36,7 +36,7 @@ export async function render(
 
 	if (!screenshot) return { text };
 
-	const pageUrl = `${baseUrl}/strategies/${strategyId}/${screenshot.path}`;
+	const pageUrl = getStrategyUrl(strategyId, screenshot.path);
 	const imageData = await takeScreenshot(pageUrl, screenshot.selector);
 	const { url } = await uploadImage(`${strategyId}_${trigger}_${getTimestamp()}.png`, imageData);
 
