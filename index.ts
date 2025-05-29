@@ -3,6 +3,7 @@ import { checkStrategyTriggers } from './lib/strategy-triggers.ts';
 import { takeScreenshot } from './lib/screenshot.ts';
 import { uploadImage } from './lib/upload-image.ts';
 import { getTimestamp } from './lib/date.ts';
+import { render } from './lib/templates.ts';
 import { postToFarcaster } from './lib/farcaster.ts';
 
 // check command line arg length
@@ -23,10 +24,10 @@ if (!trigger) {
 	process.exit(0);
 }
 
-console.log('Social media post triggered:');
-console.log(JSON.stringify(trigger));
+const { text } = render(strategyId, trigger);
 
-// exit early for now
+// log rendered text and exit early for now
+console.log(text);
 process.exit(0);
 
 // request chart screenshot from frontend
@@ -34,13 +35,6 @@ const screenshot = await takeScreenshot(`${baseUrl}/strategies/${strategyId}`, '
 
 // upload screenshot to image hosting service
 const { url } = await uploadImage(`${strategyId}_${getTimestamp()}.png`, screenshot);
-
-// compose Farcaster post text
-const pctString = trigger.performance.toLocaleString('en-US', {
-	style: 'percent',
-	minimumFractionDigits: 1
-});
-const text = `Strategy ${strategyId} is up ${pctString} in the past ${trigger.interval}`;
 
 // submit the Farcaster post (text and image)
 const cast = await postToFarcaster({ text, embeds: [{ url }] });
