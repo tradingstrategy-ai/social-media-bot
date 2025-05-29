@@ -1,8 +1,5 @@
 import 'dotenv/config';
 import { checkStrategyTriggers } from './lib/strategy-triggers.ts';
-import { takeScreenshot } from './lib/screenshot.ts';
-import { uploadImage } from './lib/upload-image.ts';
-import { getTimestamp } from './lib/date.ts';
 import { render } from './lib/templates.ts';
 import { postToFarcaster } from './lib/farcaster.ts';
 
@@ -24,20 +21,17 @@ if (!trigger) {
 	process.exit(0);
 }
 
-const { text } = render(strategyId, trigger);
+const post = await render(baseUrl, strategyId, trigger);
 
 // log rendered text and exit early for now
-console.log(text);
+console.log(post);
 process.exit(0);
 
-// request chart screenshot from frontend
-const screenshot = await takeScreenshot(`${baseUrl}/strategies/${strategyId}`, '.chart-container');
-
-// upload screenshot to image hosting service
-const { url } = await uploadImage(`${strategyId}_${getTimestamp()}.png`, screenshot);
-
 // submit the Farcaster post (text and image)
-const cast = await postToFarcaster({ text, embeds: [{ url }] });
+const cast = await postToFarcaster({
+	text: post.text,
+	embeds: [{ url: post.imageUrl }]
+});
 
 // output details of successful cast
 console.log(cast);
