@@ -62,11 +62,14 @@ export async function checkPerformance(
 		{ end: endDate }
 	);
 
+	// filter out 30d summary (interval too long for bot)
+	const filteredSummaries = summaries.filter((p) => p.interval !== '30d');
+
 	// sort by performance, best performing first
-	summaries.sort((a, b) => b.performance - a.performance);
+	filteredSummaries.sort((a, b) => b.performance - a.performance);
 
 	// get the best performing timeframe
-	const bestTimeframe = summaries[0];
+	const bestTimeframe = filteredSummaries[0];
 
 	// return it if over threshold
 	if (bestTimeframe.performance > PROFIT_THRESHOLD) {
