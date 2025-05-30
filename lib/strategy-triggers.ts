@@ -3,7 +3,8 @@ import type {
 	PerformanceSummary,
 	ClosedPositionTrigger,
 	PeriodPerformanceTrigger,
-	StrategyTrigger
+	StrategyTrigger,
+	NullTrigger
 } from './types.ts';
 import { addUTCHours } from './date.ts';
 import { fetchStrategyData } from './strategy-client.ts';
@@ -12,12 +13,14 @@ const PROFIT_THRESHOLD = 0.05;
 
 export async function checkStrategyTriggers(
 	strategyId: string
-): Promise<StrategyTrigger | undefined> {
+): Promise<StrategyTrigger | NullTrigger> {
 	const endDate = new Date();
+
 	// check triggers in parallel
 	const possibleTriggers = await Promise.all([
 		checkClosedPositions(strategyId, endDate),
-		checkPerformance(strategyId, endDate)
+		checkPerformance(strategyId, endDate),
+		{ trigger: null }
 	]);
 
 	// return the first successful trigger

@@ -28,3 +28,7 @@ export type PeriodPerformanceTrigger = PerformanceSummary & {
 };
 
 export type StrategyTrigger = ClosedPositionTrigger | PeriodPerformanceTrigger;
+
+export type NullTrigger = {
+	trigger: null;
+};
