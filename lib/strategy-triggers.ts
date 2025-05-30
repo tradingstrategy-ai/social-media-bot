@@ -13,10 +13,11 @@ const PROFIT_THRESHOLD = 0.05;
 export async function checkStrategyTriggers(
 	strategyId: string
 ): Promise<StrategyTrigger | undefined> {
+	const endDate = new Date();
 	// check triggers in parallel
 	const possibleTriggers = await Promise.all([
-		checkClosedPositions(strategyId, new Date()),
-		checkPerformance(strategyId)
+		checkClosedPositions(strategyId, endDate),
+		checkPerformance(strategyId, endDate)
 	]);
 
 	// return the first successful trigger
@@ -49,9 +50,14 @@ export async function checkClosedPositions(
 
 // returns most profitable performance summary
 export async function checkPerformance(
-	strategyId: string
+	strategyId: string,
+	endDate: Date
 ): Promise<PeriodPerformanceTrigger | undefined> {
-	const summaries = await fetchStrategyData<PerformanceSummary[]>(strategyId, 'period-performance');
+	const summaries = await fetchStrategyData<PerformanceSummary[]>(
+		strategyId,
+		'period-performance',
+		{ end: endDate }
+	);
 
 	// sort by performance, best performing first
 	summaries.sort((a, b) => b.performance - a.performance);

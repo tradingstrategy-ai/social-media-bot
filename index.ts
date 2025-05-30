@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import './lib/backtest.ts';
 import { checkStrategyTriggers } from './lib/strategy-triggers.ts';
 import { render } from './lib/templates.ts';
 import { postToFarcaster } from './lib/farcaster.ts';

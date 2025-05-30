@@ -15,6 +15,7 @@
   "dependencies": {
     "dotenv": "^16.5.0",
     "imagekit": "^6.0.0",
+    "mockdate": "^3.0.5",
     "puppeteer": "^24.8.2"
   },
   "devDependencies": {
