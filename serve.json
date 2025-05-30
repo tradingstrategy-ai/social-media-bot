@@ -1,0 +1,14 @@
+{
+	"public": "cache",
+	"headers": [
+		{
+			"source": "**",
+			"headers": [
+				{
+					"key": "Content-Type",
+					"value": "application/json"
+				}
+			]
+		}
+	]
+}
