@@ -11,7 +11,7 @@ export async function takeScreenshot(url: string, selector: string) {
 		if (node) {
 			return await node.screenshot({ type: 'png' });
 		} else {
-			throw new Error(`Node matching selector "${selector}" not found`);
+			throw new Error(`No matching selector "${selector}" not found at ${url}`);
 		}
 	} finally {
 		await browser?.close();

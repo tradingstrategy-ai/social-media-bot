@@ -12,6 +12,7 @@ type Template = (
 	text: string;
 	screenshot?: {
 		path: string;
+		params?: Record<string, string>;
 		selector: string;
 	};
 };
@@ -36,8 +37,9 @@ export async function render(
 
 	if (!screenshot) return { text };
 
-	const pageUrl = getStrategyUrl(strategyId, screenshot.path);
-	const imageData = await takeScreenshot(pageUrl, screenshot.selector);
+	const { path, params, selector } = screenshot;
+	const pageUrl = getStrategyUrl(strategyId, path, params);
+	const imageData = await takeScreenshot(pageUrl, selector);
 	const { url } = await uploadImage(`${strategyId}_${trigger}_${getTimestamp()}.png`, imageData);
 
 	return { text, imageUrl: url };
@@ -47,6 +49,7 @@ export async function render(
 const templates: Record<string, Template> = {
 	closed_position(strategyId: string, data: PositionSummary) {
 		const pctString = formatPercent(data.profitability);
+
 		return {
 			text: `Strategy ${strategyId} just closed a ${data.symbol} trade for ${pctString} profit.`,
 			// placeholder screenshot for testing
@@ -58,8 +61,11 @@ const templates: Record<string, Template> = {
 		const pctString = formatPercent(data.performance);
 		return {
 			text: `Strategy ${strategyId} is up ${pctString} in the past ${data.interval}.`,
-			// placeholder screenshot for testing
-			screenshot: { path: 'performance', selector: '.chart-container' }
+			screenshot: {
+				path: 'snapshot',
+				params: { start: data.start, end: data.end },
+				selector: '.performance-snapshot'
+			}
 		};
 	}
 };
