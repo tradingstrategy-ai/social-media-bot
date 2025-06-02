@@ -2,7 +2,7 @@ const baseUrl = process.env.TS_BASE_URL ?? 'http://localhost:5173';
 
 export function getStrategyUrl(
 	strategyId: string,
-	path: string | undefined,
+	path?: string | undefined,
 	params?: Record<string, any>
 ) {
 	let url = `${baseUrl}/strategies/${strategyId}`;
@@ -13,7 +13,7 @@ export function getStrategyUrl(
 
 export async function fetchStrategyData<T>(
 	strategyId: string,
-	path: string,
+	path?: string | undefined,
 	searchParams?: Record<string, any>
 ) {
 	const url = getStrategyUrl(strategyId, path, searchParams);

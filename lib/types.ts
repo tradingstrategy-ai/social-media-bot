@@ -1,3 +1,10 @@
+export type StrategyInfo = {
+	id: string;
+	name: string;
+	short_description?: string;
+	url: string;
+};
+
 export type PositionSummary = {
 	position_id: number;
 	opened_at: string;

@@ -1,12 +1,17 @@
-import type { StrategyTrigger, PositionSummary, PerformanceSummary } from './types.ts';
+import type {
+	StrategyInfo,
+	StrategyTrigger,
+	PositionSummary,
+	PerformanceSummary
+} from './types.ts';
 import { formatPercent } from './formatters.ts';
 import { takeScreenshot } from './screenshot.ts';
 import { uploadImage } from './upload-image.ts';
 import { getTimestamp } from './date.ts';
-import { getStrategyUrl } from './strategy-client.ts';
+import { getStrategyUrl, fetchStrategyData } from './strategy-client.ts';
 
 type Template = (
-	strategyId: string,
+	strategy: StrategyInfo,
 	data: Record<string, any>
 ) => {
 	text: string;
@@ -33,7 +38,9 @@ export async function render(
 		throw new Error(`No template found for trigger ${trigger}`);
 	}
 
-	const { text, screenshot } = templates[trigger](strategyId, payload as any);
+	const strategy = await fetchStrategyData<StrategyInfo>(strategyId);
+
+	const { text, screenshot } = templates[trigger](strategy, payload as any);
 
 	if (!screenshot) return { text };
 
@@ -47,20 +54,20 @@ export async function render(
 
 // each property of templates is a function that returns the rendered template for that trigger type
 const templates: Record<string, Template> = {
-	closed_position(strategyId: string, data: PositionSummary) {
+	closed_position(strategy: StrategyInfo, data: PositionSummary) {
 		const pctString = formatPercent(data.profitability);
 
 		return {
-			text: `Strategy ${strategyId} just closed a ${data.symbol} trade for ${pctString} profit.`,
+			text: `${strategy.name} trading strategy just closed a ${data.symbol} trade for ${pctString} profit.`,
 			// placeholder screenshot for testing
 			screenshot: { path: '', selector: '.chart-container' }
 		};
 	},
 
-	period_performance(strategyId: string, data: PerformanceSummary) {
+	period_performance(strategy: StrategyInfo, data: PerformanceSummary) {
 		const pctString = formatPercent(data.performance);
 		return {
-			text: `Strategy ${strategyId} is up ${pctString} in the past ${data.interval}.`,
+			text: `${strategy.name} trading strategy is up ${pctString} in the past ${data.interval}.`,
 			screenshot: {
 				path: 'snapshot',
 				params: { start: data.start, end: data.end },
