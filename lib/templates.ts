@@ -56,9 +56,10 @@ export async function render(
 const templates: Record<string, Template> = {
 	closed_position(strategy: StrategyInfo, data: PositionSummary) {
 		const pctString = formatPercent(data.profitability);
+		const url = getStrategyUrl(strategy.id, `closed-positions/${data.position_id}`);
 
 		return {
-			text: `${strategy.name} trading strategy just closed a ${data.symbol} trade for ${pctString} profit.`,
+			text: `${strategy.name} trading strategy just closed a ${data.symbol} trade for ${pctString} profit. ${url}`,
 			screenshot: {
 				path: `closed-positions/${data.position_id}/snapshot`,
 				selector: '.position-snapshot'
@@ -68,8 +69,10 @@ const templates: Record<string, Template> = {
 
 	period_performance(strategy: StrategyInfo, data: PerformanceSummary) {
 		const pctString = formatPercent(data.performance);
+		const url = getStrategyUrl(strategy.id);
+
 		return {
-			text: `${strategy.name} trading strategy is up ${pctString} in the past ${data.interval}.`,
+			text: `${strategy.name} trading strategy is up ${pctString} in the past ${data.interval}. ${url}`,
 			screenshot: {
 				path: 'snapshot',
 				params: { start: data.start, end: data.end },
