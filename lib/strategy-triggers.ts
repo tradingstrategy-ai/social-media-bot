@@ -20,7 +20,7 @@ export async function checkStrategyTriggers(
 	const possibleTriggers = await Promise.all([
 		checkClosedPositions(strategyId, endDate),
 		checkPerformance(strategyId, endDate),
-		{ trigger: null }
+		{ type: null }
 	]);
 
 	// return the first successful trigger
@@ -45,7 +45,7 @@ export async function checkClosedPositions(
 	// return summary data if over threshold
 	if (mostProfitable?.profitability > PROFIT_THRESHOLD) {
 		return {
-			trigger: 'closed_position',
+			type: 'closed_position',
 			...mostProfitable
 		};
 	}
@@ -74,7 +74,7 @@ export async function checkPerformance(
 	// return it if over threshold
 	if (bestTimeframe.performance > PROFIT_THRESHOLD) {
 		return {
-			trigger: 'period_performance',
+			type: 'period_performance',
 			...bestTimeframe
 		};
 	}

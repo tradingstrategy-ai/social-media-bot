@@ -32,22 +32,22 @@ type RenderedPost = {
  */
 export async function render(
 	strategyId: string,
-	{ trigger, ...payload }: StrategyTrigger
+	{ type, ...payload }: StrategyTrigger
 ): Promise<RenderedPost> {
-	if (!(trigger in templates)) {
-		throw new Error(`No template found for trigger ${trigger}`);
+	if (!(type in templates)) {
+		throw new Error(`No template found for trigger ${type}`);
 	}
 
 	const strategy = await fetchStrategyData<StrategyInfo>(strategyId);
 
-	const { text, screenshot } = templates[trigger](strategy, payload as any);
+	const { text, screenshot } = templates[type](strategy, payload as any);
 
 	if (!screenshot) return { text };
 
 	const { path, params, selector } = screenshot;
 	const pageUrl = getStrategyUrl(strategyId, path, params);
 	const imageData = await takeScreenshot(pageUrl, selector);
-	const { url } = await uploadImage(`${strategyId}_${trigger}_${getTimestamp()}.png`, imageData);
+	const { url } = await uploadImage(`${strategyId}_${type}_${getTimestamp()}.png`, imageData);
 
 	return { text, imageUrl: url };
 }

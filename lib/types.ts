@@ -1,11 +1,11 @@
-export type StrategyInfo = {
+export interface StrategyInfo {
 	id: string;
 	name: string;
 	short_description?: string;
 	url: string;
-};
+}
 
-export type PositionSummary = {
+export interface PositionSummary {
 	position_id: number;
 	opened_at: string;
 	closed_at: string;
@@ -14,28 +14,28 @@ export type PositionSummary = {
 	open_price: number;
 	close_price: number;
 	profitability: number;
-	type: string;
+	kind: string;
 	symbol: string;
-};
+}
 
 export type ClosedPositionTrigger = PositionSummary & {
-	trigger: 'closed_position';
+	type: 'closed_position';
 };
 
-export type PerformanceSummary = {
+export interface PerformanceSummary {
 	interval: `${number}${'m' | 'h' | 'd'}`;
 	start: string;
 	end: string;
 	performance: number;
 	annualizedReturn: number;
-};
+}
 
 export type PeriodPerformanceTrigger = PerformanceSummary & {
-	trigger: 'period_performance';
+	type: 'period_performance';
 };
 
 export type StrategyTrigger = ClosedPositionTrigger | PeriodPerformanceTrigger;
 
 export type NullTrigger = {
-	trigger: null;
+	type: null;
 };

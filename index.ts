@@ -25,7 +25,7 @@ if (isBacktest) {
 }
 
 // if no trigger, log and exit
-if (trigger.trigger === null) {
+if (trigger.type === null) {
 	log(strategyId, trigger);
 	console.log('No matching strategy trigger');
 	process.exit(0);
