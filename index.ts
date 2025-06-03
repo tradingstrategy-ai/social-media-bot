@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import type { StrategyTrigger } from './lib/types.ts';
-import { isBacktest, logBacktest } from './lib/backtest.ts';
+import { isBacktest } from './lib/backtest.ts';
+import { log } from './lib/logger.ts';
 import { checkStrategyTriggers } from './lib/strategy-triggers.ts';
 import { render } from './lib/templates.ts';
 import { postToFarcaster } from './lib/farcaster.ts';
@@ -19,12 +20,13 @@ const trigger = await checkStrategyTriggers(strategyId);
 
 // if this is a backtest, log trigger and exit
 if (isBacktest) {
-	logBacktest(trigger);
+	log(strategyId, trigger);
 	process.exit(0);
 }
 
 // if no trigger, log and exit
 if (trigger.trigger === null) {
+	log(strategyId, trigger);
 	console.log('No matching strategy trigger');
 	process.exit(0);
 }
@@ -32,7 +34,8 @@ if (trigger.trigger === null) {
 // render the social media post
 const post = await render(strategyId, trigger as StrategyTrigger);
 
-// log rendered text and exit early for now
+// log and exit early for now
+log(strategyId, trigger);
 console.log(post);
 process.exit(0);
 
