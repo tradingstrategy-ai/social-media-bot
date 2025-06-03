@@ -59,8 +59,10 @@ const templates: Record<string, Template> = {
 
 		return {
 			text: `${strategy.name} trading strategy just closed a ${data.symbol} trade for ${pctString} profit.`,
-			// placeholder screenshot for testing
-			screenshot: { path: '', selector: '.chart-container' }
+			screenshot: {
+				path: `closed-positions/${data.position_id}/snapshot`,
+				selector: '.position-snapshot'
+			}
 		};
 	},
 
