@@ -9,6 +9,7 @@ import { takeScreenshot } from './screenshot.ts';
 import { uploadImage } from './upload-image.ts';
 import { getTimestamp } from './date.ts';
 import { getStrategyUrl, fetchStrategyData } from './strategy-client.ts';
+import { getTimeBucketLabel } from './time-bucket.ts';
 
 type Template = (
 	strategy: StrategyInfo,
@@ -70,9 +71,10 @@ const templates: Record<string, Template> = {
 	period_performance(strategy: StrategyInfo, data: PerformanceSummary) {
 		const pctString = formatPercent(data.performance);
 		const url = getStrategyUrl(strategy.id);
+		const timeBucketLabel = getTimeBucketLabel(data.timeBucket);
 
 		return {
-			text: `${strategy.name} strategy vault is up ${pctString} in the past ${data.timeBucket}. ${url}`,
+			text: `${strategy.name} strategy vault is up ${pctString} in the past ${timeBucketLabel}. ${url}`,
 			screenshot: {
 				path: 'snapshot',
 				params: { start: data.start, end: data.end },

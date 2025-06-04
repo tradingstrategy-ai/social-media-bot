@@ -1,3 +1,5 @@
+import type { TimeBucket } from './time-bucket.ts';
+
 export interface StrategyInfo {
 	id: string;
 	name: string;
@@ -21,8 +23,6 @@ export interface PositionSummary {
 export type ClosedPositionTrigger = PositionSummary & {
 	type: 'closed_position';
 };
-
-export type TimeBucket = '1h' | '4h' | '1d' | '7d' | '30d';
 
 export interface PerformanceSummary {
 	timeBucket: TimeBucket;
