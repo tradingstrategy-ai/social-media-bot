@@ -6,10 +6,14 @@ import type {
 	StrategyTrigger,
 	NullTrigger
 } from './types.ts';
-import { addUTCHours } from './date.ts';
+import { addUTCHours, addUTCMinutes } from './date.ts';
 import { fetchStrategyData } from './strategy-client.ts';
+import { findRecentLogs } from './logger.ts';
 
 const PROFIT_THRESHOLD = 0.05;
+
+// Hours to wait between period_performance triggered posts
+const PERFORMANCE_COOLDOWN_HOURS = 11;
 
 export async function checkStrategyTriggers(
 	strategyId: string
@@ -43,7 +47,7 @@ export async function checkClosedPositions(
 	const mostProfitable = positionsAlt[0];
 
 	// return summary data if over threshold
-	if (mostProfitable?.profitability > PROFIT_THRESHOLD) {
+	if (mostProfitable?.profitability >= PROFIT_THRESHOLD) {
 		return {
 			type: 'closed_position',
 			...mostProfitable
@@ -56,6 +60,9 @@ export async function checkPerformance(
 	strategyId: string,
 	endDate: Date
 ): Promise<PeriodPerformanceTrigger | undefined> {
+	// skip if in cooldown period since last post
+	if (hasRecentPerformancePosts(strategyId, endDate)) return;
+
 	const summaries = await fetchStrategyData<PerformanceSummary[]>(
 		strategyId,
 		'period-performance',
@@ -71,11 +78,24 @@ export async function checkPerformance(
 	// get the best performing timeframe
 	const bestTimeframe = filteredSummaries[0];
 
-	// return it if over threshold
-	if (bestTimeframe.performance > PROFIT_THRESHOLD) {
+	// return trigger if over threshold
+	if (bestTimeframe.performance >= PROFIT_THRESHOLD) {
 		return {
 			type: 'period_performance',
 			...bestTimeframe
 		};
 	}
+}
+
+function hasRecentPerformancePosts(strategyId: string, endDate: Date) {
+	// cooldown period includes cooldown hours + 10 minutes to account for timing jank
+	const cooldownMinutes = PERFORMANCE_COOLDOWN_HOURS * 60 + 10;
+	const cutoffTime = addUTCMinutes(endDate, -cooldownMinutes);
+
+	// find recent entrires within cooldown window with the right trigger type
+	const recentEntries = findRecentLogs(strategyId, (entry) => {
+		return new Date(entry.ts) > cutoffTime && entry.trigger.type === 'period_performance';
+	});
+
+	return recentEntries.length > 0;
 }

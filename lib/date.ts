@@ -15,3 +15,9 @@ export function addUTCHours(d0: Date, hours: number) {
 	d1.setUTCHours(d1.getUTCHours() + hours);
 	return d1;
 }
+
+export function addUTCMinutes(d0: Date, minutes: number) {
+	const d1 = new Date(d0);
+	d1.setUTCMinutes(d1.getUTCMinutes() + minutes);
+	return d1;
+}
