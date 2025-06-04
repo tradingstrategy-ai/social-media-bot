@@ -72,7 +72,7 @@ const templates: Record<string, Template> = {
 		const url = getStrategyUrl(strategy.id);
 
 		return {
-			text: `${strategy.name} strategy vault is up ${pctString} in the past ${data.interval}. ${url}`,
+			text: `${strategy.name} strategy vault is up ${pctString} in the past ${data.timeBucket}. ${url}`,
 			screenshot: {
 				path: 'snapshot',
 				params: { start: data.start, end: data.end },

@@ -22,8 +22,10 @@ export type ClosedPositionTrigger = PositionSummary & {
 	type: 'closed_position';
 };
 
+export type TimeBucket = '1h' | '4h' | '1d' | '7d' | '30d';
+
 export interface PerformanceSummary {
-	interval: `${number}${'m' | 'h' | 'd'}`;
+	timeBucket: TimeBucket;
 	start: string;
 	end: string;
 	performance: number;

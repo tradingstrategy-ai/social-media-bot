@@ -69,8 +69,8 @@ export async function checkPerformance(
 		{ end: endDate }
 	);
 
-	// filter out 30d summary (interval too long for bot)
-	const filteredSummaries = summaries.filter((p) => p.interval !== '30d');
+	// filter out 30d summary (timeBucket too long for bot)
+	const filteredSummaries = summaries.filter((p) => p.timeBucket !== '30d');
 
 	// sort by performance, best performing first
 	filteredSummaries.sort((a, b) => b.performance - a.performance);
