@@ -13,9 +13,8 @@ console.error(
 
 for (const interval of generateIntervals(start, end)) {
 	try {
-		execSync(`pnpm run --silent dev ${strategyId}`, {
-			env: { ...process.env, BACKTEST_TIME: interval.toISOString() },
-			stdio: 'inherit'
+		execSync(`pnpm run --silent dev ${strategyId} check`, {
+			env: { ...process.env, BACKTEST_TIME: interval.toISOString() }
 		});
 	} catch (error) {
 		console.error(`Error at ${interval.toISOString()}:`, error);

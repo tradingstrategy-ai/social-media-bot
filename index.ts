@@ -1,43 +1,34 @@
 import 'dotenv/config';
 import type { StrategyTrigger } from './lib/types.ts';
-import { isBacktest } from './lib/backtest.ts';
 import { log } from './lib/logger.ts';
 import { checkStrategyTriggers } from './lib/strategy-triggers.ts';
 import { render } from './lib/templates.ts';
 import { postToFarcaster } from './lib/farcaster.ts';
 
-// check command line arg length
-if (process.argv.length !== 3) {
-	console.log('usage: node index.js [strategyId]');
-	process.exit(1);
-}
+/***************************************
+ * Main script
+ **************************************/
 
-// define strategyId from command arg
-const strategyId = process.argv[2];
+const [strategyId, command] = parseArgs();
 
-// check for any social media triggers and abort if none
+// check for any social media triggers
 const trigger = await checkStrategyTriggers(strategyId);
 
-// if this is a backtest, log trigger and exit
-if (isBacktest) {
+// if "check" command or null trigger, log and exit
+if (command === 'check' || trigger.type === null) {
 	log(strategyId, trigger);
-	process.exit(0);
-}
-
-// if no trigger, log and exit
-if (trigger.type === null) {
-	log(strategyId, trigger);
-	console.log('No matching strategy trigger');
 	process.exit(0);
 }
 
 // render the social media post
 const post = await render(strategyId, trigger as StrategyTrigger);
 
-// log and exit early for now
-log(strategyId, trigger);
-console.log(post);
-process.exit(0);
+// if "render" command, log and exit
+if (command === 'render') {
+	log(strategyId, trigger);
+	console.log(post);
+	process.exit(0);
+}
 
 // submit the Farcaster post (text and image)
 const cast = await postToFarcaster({
@@ -45,5 +36,28 @@ const cast = await postToFarcaster({
 	embeds: [{ url: post.imageUrl }]
 });
 
-// output details of successful cast
+// log and output details of successful cast
+log(strategyId, trigger);
 console.log(cast);
+
+/***************************************
+ * Helper functions
+ **************************************/
+
+function parseArgs(): [string, string] {
+	const args = process.argv.slice(2);
+
+	if (args.length !== 2) {
+		console.error('Usage: node index.js <strategyId> <command>');
+		process.exit(1);
+	}
+
+	const [strategyId, command] = args;
+
+	if (!['check', 'render', 'post'].includes(command)) {
+		console.error('Error: command should be one of `${commands.join(', ')}`');
+		process.exit(1);
+	}
+
+	return [strategyId, command];
+}
