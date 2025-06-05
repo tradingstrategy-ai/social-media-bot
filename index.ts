@@ -11,33 +11,38 @@ import { postToFarcaster } from './lib/farcaster.ts';
  **************************************/
 
 const [strategyId, command] = parseArgs();
+const result = await main(strategyId, command);
+logger.log(result.trigger, result.content, result.posts);
 
-// check for any social media triggers
-const trigger = await checkStrategyTriggers(strategyId);
+/***************************************
+ * Core logic
+ **************************************/
 
-// if "check" command or null trigger, log and exit
-if (command === 'check' || trigger.type === null) {
-	logger.log(trigger);
-	process.exit(0);
+async function main(strategyId: string, command: string) {
+	// check for any social media triggers
+	const trigger = await checkStrategyTriggers(strategyId);
+
+	// if "check" command or null trigger, return early
+	if (command === 'check' || trigger.type === null) {
+		return { trigger };
+	}
+
+	// render the social media post
+	const content = await render(strategyId, trigger as StrategyTrigger);
+
+	// if "render" command, return early
+	if (command === 'render') {
+		return { trigger, content };
+	}
+
+	// submit the Farcaster post (text and image)
+	const post = await postToFarcaster({
+		text: content.text,
+		embeds: [{ url: content.imageUrl }]
+	});
+
+	return { trigger, content, posts: [post] };
 }
-
-// render the social media post
-const content = await render(strategyId, trigger as StrategyTrigger);
-
-// if "render" command, log and exit
-if (command === 'render') {
-	logger.log(trigger, content);
-	process.exit(0);
-}
-
-// submit the Farcaster post (text and image)
-const post = await postToFarcaster({
-	text: content.text,
-	embeds: [{ url: content.imageUrl }]
-});
-
-// log and exit
-logger.log(trigger, content, [post]);
 
 /***************************************
  * Helper functions
