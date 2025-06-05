@@ -6,9 +6,9 @@ import type {
 	StrategyTrigger,
 	NullTrigger
 } from './types.ts';
+import { logger } from './logger-instance.ts';
 import { addUTCHours, addUTCMinutes } from './date.ts';
 import { fetchStrategyData } from './strategy-client.ts';
-import type { Logger } from './logger.ts';
 
 const PROFIT_THRESHOLD = 0.05;
 
@@ -16,15 +16,14 @@ const PROFIT_THRESHOLD = 0.05;
 const PERFORMANCE_COOLDOWN_HOURS = 11;
 
 export async function checkStrategyTriggers(
-	strategyId: string,
-	logger: Logger
+	strategyId: string
 ): Promise<StrategyTrigger | NullTrigger> {
 	const endDate = new Date();
 
 	// check triggers in parallel
 	const possibleTriggers = await Promise.all([
 		checkClosedPositions(strategyId, endDate),
-		checkPerformance(strategyId, endDate, logger),
+		checkPerformance(strategyId, endDate),
 		{ type: null }
 	]);
 
@@ -59,11 +58,10 @@ export async function checkClosedPositions(
 // returns most profitable performance summary
 export async function checkPerformance(
 	strategyId: string,
-	endDate: Date,
-	logger: Logger
+	endDate: Date
 ): Promise<PeriodPerformanceTrigger | undefined> {
 	// skip if in cooldown period since last post
-	if (hasRecentPerformancePosts(endDate, logger)) return;
+	if (hasRecentPerformancePosts(endDate)) return;
 
 	const summaries = await fetchStrategyData<PerformanceSummary[]>(
 		strategyId,
@@ -89,7 +87,7 @@ export async function checkPerformance(
 	}
 }
 
-function hasRecentPerformancePosts(endDate: Date, logger: Logger) {
+function hasRecentPerformancePosts(endDate: Date) {
 	// cooldown period includes cooldown hours + 10 minutes to account for timing jank
 	const cooldownMinutes = PERFORMANCE_COOLDOWN_HOURS * 60 + 10;
 	const cutoffTime = addUTCMinutes(endDate, -cooldownMinutes);

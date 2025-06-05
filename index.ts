@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import './lib/backtest.ts';
 import type { StrategyTrigger } from './lib/types.ts';
-import { Logger } from './lib/logger.ts';
+import { logger } from './lib/logger-instance.ts';
 import { checkStrategyTriggers } from './lib/strategy-triggers.ts';
 import { render } from './lib/templates.ts';
 import { postToFarcaster } from './lib/farcaster.ts';
@@ -10,13 +10,10 @@ import { postToFarcaster } from './lib/farcaster.ts';
  * Main script
  **************************************/
 
-const [strategyId, command, logFile] = parseArgs();
-
-// create logger instance
-const logger = new Logger(logFile);
+const [strategyId, command] = parseArgs();
 
 // check for any social media triggers
-const trigger = await checkStrategyTriggers(strategyId, logger);
+const trigger = await checkStrategyTriggers(strategyId);
 
 // if "check" command or null trigger, log and exit
 if (command === 'check' || trigger.type === null) {
@@ -46,7 +43,7 @@ logger.log(trigger, content, [post]);
  * Helper functions
  **************************************/
 
-function parseArgs(): [string, string, string | undefined] {
+function parseArgs(): [string, string] {
 	const args = process.argv.slice(2);
 
 	if (args.length < 2 || args.length > 4) {
@@ -61,14 +58,14 @@ function parseArgs(): [string, string, string | undefined] {
 		process.exit(1);
 	}
 
-	// Parse optional --logfile argument (last)
-	let logFile: string | undefined;
-	if (args.length === 4 && args[2] === '--logfile') {
-		logFile = args[3];
+	// Validate --logfile format if provided
+	if (args.length === 4 && args[2] !== '--logfile') {
+		console.error('Usage: node index.js <strategyId> <command> [--logfile <path>]');
+		process.exit(1);
 	} else if (args.length === 3) {
 		console.error('Usage: node index.js <strategyId> <command> [--logfile <path>]');
 		process.exit(1);
 	}
 
-	return [strategyId, command, logFile];
+	return [strategyId, command];
 }
