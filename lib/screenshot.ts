@@ -6,7 +6,7 @@ export async function takeScreenshot(url: string, selector: string) {
 
 	try {
 		await page.goto(url);
-		const node = await page.$(selector);
+		const node = await page.waitForSelector(selector);
 
 		if (node) {
 			return await node.screenshot({ type: 'png' });
