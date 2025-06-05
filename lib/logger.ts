@@ -1,11 +1,8 @@
 import type { StrategyTrigger, NullTrigger } from './types.ts';
 import { appendFileSync, mkdirSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
-import { join } from 'node:path';
-import { isBacktest } from './backtest.ts';
+import { dirname } from 'node:path';
 import type { RenderedPost } from './templates.ts';
-
-const logDir = './logs';
 
 export interface PlatformResult {
 	platform: string;
@@ -22,42 +19,84 @@ export interface ExecutionLogEntry {
 }
 
 /**
- * Get the log file path for a strategy
+ * Logger class for handling execution logging
  */
-function getLogFilePath(strategyId: string): string {
-	const suffix = isBacktest ? '-backtest' : '';
-	return join(logDir, `${strategyId}${suffix}.jsonl`);
-}
+export class Logger {
+	private logFile?: string;
 
-/**
- * Log an execution event for a strategy
- *
- * @param strategyId Unique identifier for the strategy
- * @param trigger The trigger that caused this execution
- * @param posts Array of platform results from posting attempts (defaults to empty array)
- */
-export function log(
-	strategyId: string,
-	trigger: StrategyTrigger | NullTrigger,
-	content?: RenderedPost,
-	posts?: PlatformResult[]
-): void {
-	const logFile = getLogFilePath(strategyId);
+	constructor(logFile?: string) {
+		this.logFile = logFile;
+	}
 
-	// ensure log directory exists
-	mkdirSync(logDir, { recursive: true });
+	/**
+	 * Log an execution event
+	 *
+	 * @param trigger The trigger that caused this execution
+	 * @param content Rendered content (optional)
+	 * @param posts Array of platform results from posting attempts (optional)
+	 */
+	log(
+		trigger: StrategyTrigger | NullTrigger,
+		content?: RenderedPost,
+		posts?: PlatformResult[]
+	): void {
+		// create log entry
+		const entry: ExecutionLogEntry = {
+			ts: new Date().toISOString(),
+			trigger,
+			content,
+			posts
+		};
 
-	// create log entry
-	const entry: ExecutionLogEntry = {
-		ts: new Date().toISOString(),
-		trigger,
-		content,
-		posts
-	};
+		const jsonLine = JSON.stringify(entry) + '\n';
 
-	// append JSONL entry
-	const jsonLine = JSON.stringify(entry) + '\n';
-	appendFileSync(logFile, jsonLine);
+		if (this.logFile) {
+			// ensure log directory exists
+			mkdirSync(dirname(this.logFile), { recursive: true });
+			// append JSONL entry to file
+			appendFileSync(this.logFile, jsonLine);
+		} else {
+			// log to stdout
+			process.stdout.write(jsonLine);
+		}
+	}
+
+	/**
+	 * Find recent log entries matching the given criteria
+	 * Uses `tail` command for efficient reading of recent entries from large log files.
+	 *
+	 * @param matcher Function to test each log entry
+	 * @param maxEntries Maximum number of log entries to check
+	 * @returns Array of matching log entries in reverse chronological order
+	 */
+	findRecent(
+		matcher: (entry: ExecutionLogEntry) => boolean,
+		maxEntries = 100
+	): ExecutionLogEntry[] {
+		if (!this.logFile) return [];
+
+		if (!existsSync(this.logFile)) return [];
+
+		// use tail to efficiently get last n entries
+		let output: string;
+		try {
+			output = execSync(`tail -n ${maxEntries} "${this.logFile}"`, {
+				encoding: 'utf8',
+				stdio: 'pipe'
+			});
+		} catch (error) {
+			console.warn(`Error reading log file ${this.logFile}: ${error}`);
+			return [];
+		}
+
+		const lines = output.trim().split('\n');
+
+		return lines.reduceRight<ExecutionLogEntry[]>((acc, line) => {
+			const entry = processLogLine(line, matcher);
+			if (entry) acc.push(entry);
+			return acc;
+		}, []);
+	}
 }
 
 /**
@@ -78,44 +117,6 @@ function processLogLine(
 	}
 
 	return matcher(entry) ? entry : undefined;
-}
-
-/**
- * Find recent log entries matching the given criteria
- * Uses `tail` command for efficient reading of recent entries from large log files.
- *
- * @param strategyId Strategy ID to query logs for
- * @param matcher Function to test each log entry
- * @param maxEntries Maximum number of log entries to check
- * @returns Array of matching log entries in reverse chronological order
- */
-export function findRecentLogs(
-	strategyId: string,
-	matcher: (entry: ExecutionLogEntry) => boolean,
-	maxEntries = 100
-): ExecutionLogEntry[] {
-	const logFile = getLogFilePath(strategyId);
-	if (!existsSync(logFile)) return [];
-
-	// use tail to efficiently get last n entries
-	let output: string;
-	try {
-		output = execSync(`tail -n ${maxEntries} "${logFile}"`, {
-			encoding: 'utf8',
-			stdio: 'pipe'
-		});
-	} catch (error) {
-		console.warn(`Error reading log file ${logFile}: ${error}`);
-		return [];
-	}
-
-	const lines = output.trim().split('\n');
-
-	return lines.reduceRight<ExecutionLogEntry[]>((acc, line) => {
-		const entry = processLogLine(line, matcher);
-		if (entry) acc.push(entry);
-		return acc;
-	}, []);
 }
 
 // helper to create platform result

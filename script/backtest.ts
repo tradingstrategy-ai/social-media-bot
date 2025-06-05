@@ -7,13 +7,19 @@ import { addUTCHours } from '../lib/date.ts';
 
 const [strategyId, start, end] = parseArgs();
 
+// Create backtest logfile with timestamp
+const backtestStartTime = new Date();
+const timestamp = formatTimestamp(backtestStartTime);
+const logFile = `./logs/backtests/${strategyId}_${timestamp}.jsonl`;
+
 console.error(
 	`Starting backtest from ${start.toISOString().slice(0, 16)} to ${end.toISOString().slice(0, 16)}`
 );
+console.error(`Backtest log file: ${logFile}`);
 
 for (const interval of generateIntervals(start, end)) {
 	try {
-		execSync(`pnpm run --silent dev ${strategyId} check`, {
+		execSync(`pnpm run --silent dev ${strategyId} check --logfile ${logFile}`, {
 			env: { ...process.env, BACKTEST_TIME: interval.toISOString() }
 		});
 	} catch (error) {
@@ -62,4 +68,8 @@ function* generateIntervals(start: Date, end: Date): Generator<Date> {
 		yield new Date(current);
 		current = addUTCHours(current, 1);
 	}
+}
+
+function formatTimestamp(date: Date): string {
+	return date.toISOString().slice(0, 16).replace(/[-T:]/g, '');
 }
