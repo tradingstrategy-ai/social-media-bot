@@ -3,6 +3,7 @@ import { appendFileSync, mkdirSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join } from 'node:path';
 import { isBacktest } from './backtest.ts';
+import type { RenderedPost } from './templates.ts';
 
 const logDir = './logs';
 
@@ -16,7 +17,8 @@ export interface PlatformResult {
 export interface ExecutionLogEntry {
 	ts: string;
 	trigger: StrategyTrigger | NullTrigger;
-	posts: PlatformResult[];
+	content?: RenderedPost;
+	posts?: PlatformResult[];
 }
 
 /**
@@ -37,7 +39,8 @@ function getLogFilePath(strategyId: string): string {
 export function log(
 	strategyId: string,
 	trigger: StrategyTrigger | NullTrigger,
-	posts: PlatformResult[] = []
+	content?: RenderedPost,
+	posts?: PlatformResult[]
 ): void {
 	const logFile = getLogFilePath(strategyId);
 
@@ -48,6 +51,7 @@ export function log(
 	const entry: ExecutionLogEntry = {
 		ts: new Date().toISOString(),
 		trigger,
+		content,
 		posts
 	};
 

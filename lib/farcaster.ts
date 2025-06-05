@@ -1,3 +1,6 @@
+// See https://docs.neynar.com/reference/publish-cast
+import { createPlatformResult } from './logger.ts';
+
 const apiUrl = 'https://api.neynar.com/v2/farcaster';
 
 const signer_uuid = process.env.NEYNAR_SIGNER_UUID;
@@ -12,6 +15,13 @@ export interface CastParams {
 	embeds?: { url: string }[];
 }
 
+export interface CastResponse {
+	success: boolean;
+	cast: {
+		hash: `0x${string}`;
+	};
+}
+
 export async function postToFarcaster(params: CastParams) {
 	const response = await fetch(`${apiUrl}/cast`, {
 		method: 'POST',
@@ -19,5 +29,7 @@ export async function postToFarcaster(params: CastParams) {
 		body: JSON.stringify({ signer_uuid, ...params })
 	});
 
-	return response.json();
+	const { success, cast }: CastResponse = await response.json();
+
+	return createPlatformResult('farcaster', success, cast.hash);
 }

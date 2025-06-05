@@ -23,7 +23,7 @@ type Template = (
 	};
 };
 
-type RenderedPost = {
+export type RenderedPost = {
 	text: string;
 	imageUrl?: string;
 };

@@ -21,24 +21,22 @@ if (command === 'check' || trigger.type === null) {
 }
 
 // render the social media post
-const post = await render(strategyId, trigger as StrategyTrigger);
+const content = await render(strategyId, trigger as StrategyTrigger);
 
 // if "render" command, log and exit
 if (command === 'render') {
-	log(strategyId, trigger);
-	console.log(post);
+	log(strategyId, trigger, content);
 	process.exit(0);
 }
 
 // submit the Farcaster post (text and image)
-const cast = await postToFarcaster({
-	text: post.text,
-	embeds: [{ url: post.imageUrl }]
+const post = await postToFarcaster({
+	text: content.text,
+	embeds: [{ url: content.imageUrl }]
 });
 
-// log and output details of successful cast
-log(strategyId, trigger);
-console.log(cast);
+// log and exit
+log(strategyId, trigger, content, [post]);
 
 /***************************************
  * Helper functions
