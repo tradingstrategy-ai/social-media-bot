@@ -1,8 +1,8 @@
 import type { StrategyTrigger, NullTrigger } from './types.ts';
+import type { RenderedPost } from './templates.ts';
 import { appendFileSync, mkdirSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { dirname } from 'node:path';
-import type { RenderedPost } from './templates.ts';
 
 export interface PlatformResult {
 	platform: string;
@@ -26,6 +26,11 @@ export class Logger {
 
 	constructor(logFile?: string) {
 		this.logFile = logFile;
+
+		// Ensure log directory exists if logFile is provided
+		if (logFile) {
+			mkdirSync(dirname(this.logFile), { recursive: true });
+		}
 	}
 
 	/**
@@ -50,14 +55,12 @@ export class Logger {
 
 		const jsonLine = JSON.stringify(entry) + '\n';
 
+		// always log to stdout
+		process.stdout.write(jsonLine);
+
+		// append JSONL entry to file
 		if (this.logFile) {
-			// ensure log directory exists
-			mkdirSync(dirname(this.logFile), { recursive: true });
-			// append JSONL entry to file
 			appendFileSync(this.logFile, jsonLine);
-		} else {
-			// log to stdout
-			process.stdout.write(jsonLine);
 		}
 	}
 
