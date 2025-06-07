@@ -1,8 +1,8 @@
 {
-  "name": "bots-spike",
-  "version": "0.0.1",
+  "name": "social-media-bot",
+  "version": "0.1.0",
   "type": "module",
-  "description": "Trading Stategy Social Media Bots",
+  "description": "Trading Strategy social media bot application",
   "main": "index.ts",
   "scripts": {
     "dev": "NODE_ENV=development node --disable-warning=ExperimentalWarning index.ts",
@@ -17,7 +17,7 @@
     "dotenv": "^16.5.0",
     "imagekit": "^6.0.0",
     "mockdate": "^3.0.5",
-    "puppeteer": "^24.8.2"
+    "playwright": "^1.52.0"
   },
   "devDependencies": {
     "eslint": "^9.26.0",

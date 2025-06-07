@@ -29,6 +29,15 @@ corepack enable pnpm
 pnpm install
 ```
 
+### Install Firefox via Playwright
+
+We're using Playwright to generate screenshots of charts rendered by our `frontend` app. Install
+Firefox via Playwright:
+
+```bash
+pnpm exec playwright install firefox
+```
+
 ### Configuration
 
 Copy `.env.example` to `.env` and update the values. You'll need an

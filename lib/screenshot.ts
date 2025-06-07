@@ -1,7 +1,7 @@
-import puppeteer from 'puppeteer';
+import { firefox } from 'playwright';
 
 export async function takeScreenshot(url: string, selector: string) {
-	const browser = await puppeteer.launch();
+	const browser = await firefox.launch();
 	const page = await browser.newPage();
 
 	try {
@@ -11,9 +11,9 @@ export async function takeScreenshot(url: string, selector: string) {
 		if (node) {
 			return await node.screenshot({ type: 'png' });
 		} else {
-			throw new Error(`No matching selector "${selector}" not found at ${url}`);
+			throw new Error(`Selector "${selector}" not found at ${url}`);
 		}
 	} finally {
-		await browser?.close();
+		await browser.close();
 	}
 }
