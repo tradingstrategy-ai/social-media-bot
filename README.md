@@ -98,7 +98,7 @@ TS_PUBLIC_STRATEGIES='[{"id":"enzyme-arbitrum-eth-btc-rsi","name":"enzyme-arbitr
 ```
 
 The last line of the output above can be used to start a local instance of
-(frontend)[https://github.com/tradingstrategy-ai/frontend] with the cached strategy config.
+[frontend](https://github.com/tradingstrategy-ai/frontend) with the cached strategy config.
 
 ### Running the backtest
 
