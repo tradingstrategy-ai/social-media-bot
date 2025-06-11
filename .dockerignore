@@ -1,0 +1,63 @@
+# Dependencies (installed separately in Dockerfile)
+node_modules
+pnpm-debug.log*
+
+# Runtime data and logs
+cache
+logs
+
+# Environment files (security)
+.env*
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Development and documentation files
+README.md
+.scratchpad.md
+
+# Docker files (optional - uncomment if you don't want them in the image)
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Test files and coverage
+tests
+coverage
+*.test.ts
+
+# Package manager files
+.npmrc
+.nvmrc
+.pnpmrc
+
+# Linting and formatting
+.eslintrc*
+.prettierrc*
+.prettierignore
+eslint.config.js
+
+# TypeScript config (runtime doesn't need it)
+tsconfig.json
+vitest.config.ts
+
+# Serve config (not needed in container)
+serve.json
