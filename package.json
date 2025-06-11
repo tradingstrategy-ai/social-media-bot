@@ -8,7 +8,8 @@
     "dev": "NODE_ENV=development node --disable-warning=ExperimentalWarning index.ts",
     "start": "NODE_ENV=production node --disable-warning=ExperimentalWarning index.ts",
     "backtest": "node --disable-warning=ExperimentalWarning script/backtest.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
+    "test:run": "vitest run",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"**/*.{js,ts,json}\""
@@ -25,7 +26,8 @@
     "eslint-plugin-prettier": "^5.4.0",
     "prettier": "^3.5.3",
     "serve": "^14.2.4",
-    "typescript-eslint": "^8.32.1"
+    "typescript-eslint": "^8.32.1",
+    "vitest": "^2.0.0"
   },
   "packageManager": "pnpm@10.9.0+sha512.0486e394640d3c1fb3c9d43d49cf92879ff74f8516959c235308f5a8f62e2e19528a65cdc2a3058f587cde71eba3d5b56327c8c33a97e4c4051ca48a10ca2d5f"
 }
