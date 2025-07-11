@@ -12,6 +12,8 @@ import { fetchStrategyData } from './strategy-client.ts';
 
 const PROFIT_THRESHOLD = 0.05;
 
+const ONE_MINUTE = 50 * 1000;
+
 // Hours to wait between period_performance triggered posts
 const PERFORMANCE_COOLDOWN_HOURS = 11;
 
@@ -63,19 +65,24 @@ export async function checkPerformance(
 	// skip if in cooldown period since last post
 	if (hasRecentPerformancePosts(endDate)) return;
 
+	// fetch performance summaries
 	const summaries = await fetchStrategyData<PerformanceSummary[]>(
 		strategyId,
 		'period-performance',
 		{ end: endDate }
 	);
 
-	// filter out 30d summary (timeBucket too long for bot)
-	const filteredSummaries = summaries.filter((p) => p.timeBucket !== '30d');
+	// abort if performance summary end dete > 30 minutes stale
+	if (summaries.length > 0) {
+		const performanceEndDate = new Date(summaries[0].end);
+		if (+endDate - +performanceEndDate > 30 * ONE_MINUTE) return;
+	}
 
-	// sort by performance, best performing first
-	filteredSummaries.sort((a, b) => b.performance - a.performance);
+	// filter - only consider 4h, 1d and 7d summaries
+	const filteredSummaries = summaries.filter((p) => p.timeBucket.match(/4h|1d|7d/));
 
 	// get the best performing timeframe
+	filteredSummaries.sort((a, b) => b.performance - a.performance);
 	const bestTimeframe = filteredSummaries[0];
 
 	// return trigger if over threshold
