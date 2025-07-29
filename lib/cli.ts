@@ -1,6 +1,6 @@
 /**
  * Parse command line arguments for the social media bot.
- * 
+ *
  * @returns [strategyId, command] tuple
  * @throws Exits process with error code 1 if arguments are invalid
  */

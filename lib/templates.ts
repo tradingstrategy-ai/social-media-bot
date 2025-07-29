@@ -13,7 +13,7 @@ import { getTimeBucketLabel } from './time-bucket.ts';
 
 type Template = (
 	strategy: StrategyInfo,
-	data: Record<string, any>
+	data: Record<string, string>
 ) => {
 	text: string;
 	screenshot?: {
@@ -41,7 +41,7 @@ export async function render(
 
 	const strategy = await fetchStrategyData<StrategyInfo>(strategyId);
 
-	const { text, screenshot } = templates[type](strategy, payload as any);
+	const { text, screenshot } = templates[type](strategy, payload);
 
 	if (!screenshot) return { text };
 

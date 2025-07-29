@@ -5,7 +5,7 @@
  * @param minDigits min fractional digits to display (defaults to 1)
  * @param maxDigits max fractional digits to display (defaults to min value)
  */
-export function formatPercent(number: Number, minDigits = 1, maxDigits = minDigits) {
+export function formatPercent(number: number, minDigits = 1, maxDigits = minDigits) {
 	return number.toLocaleString('en-US', {
 		style: 'percent',
 		minimumFractionDigits: minDigits,
