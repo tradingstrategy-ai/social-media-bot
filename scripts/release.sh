@@ -44,7 +44,7 @@ npm pkg set version="$NEXT_NUM"
 
 # Commit and tag
 git add package.json
-git commit -m "Bump version to $NEW_TAG [skip ci]"
+git commit -m "Bump version to $NEW_TAG"
 git tag "$NEW_TAG"
 git push && git push --tags
 
