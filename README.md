@@ -84,7 +84,7 @@ the actual `trade-executor` endpoint.
 Run the following command:
 
 ```bash
-./script/backtest-serve.sh <strategy-id>
+./scripts/backtest-serve.sh <strategy-id>
 ```
 
 This will download the `metadata` and `state` files for that strategy and serve them via local web
