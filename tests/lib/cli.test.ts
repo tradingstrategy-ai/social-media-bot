@@ -1,17 +1,22 @@
-import { vi } from 'vitest';
+import { type MockInstance, vi } from 'vitest';
 import { parseArgs } from '../../lib/cli.ts';
 
 // Mock process.argv for testing
 const originalArgv = process.argv;
 
+let exitSpy: MockInstance;
+
 beforeEach(() => {
 	// Mock process.exit to prevent actual exit during tests
-	process.exit = vi.fn() as any;
+	exitSpy = vi.spyOn(process, 'exit').mockImplementation((() => {}) as typeof process.exit);
 });
 
 afterEach(() => {
 	// Restore original process.argv
 	process.argv = originalArgv;
+
+	// Restore process.exit
+	exitSpy.mockRestore();
 });
 
 describe('parseArgs', () => {
@@ -30,7 +35,7 @@ describe('parseArgs', () => {
 	});
 
 	describe('invalid arguments', () => {
-		let consoleSpy: any;
+		let consoleSpy: MockInstance;
 
 		beforeEach(() => {
 			consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -46,7 +51,7 @@ describe('parseArgs', () => {
 			expect(consoleSpy).toHaveBeenCalledWith(
 				'Usage: node index.js <strategyId> <command> [--logfile <path>]'
 			);
-			expect(process.exit).toHaveBeenCalledWith(1);
+			expect(exitSpy).toHaveBeenCalledWith(1);
 		});
 
 		it('should exit with error for too many arguments', () => {

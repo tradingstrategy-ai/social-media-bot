@@ -39,8 +39,8 @@ export async function checkClosedPositions(
 	endDate: Date
 ): Promise<ClosedPositionTrigger | undefined> {
 	const positionsAlt = await fetchStrategyData<PositionSummary[]>(strategyId, 'closed-positions', {
-		start: addUTCHours(endDate, -1),
-		end: endDate,
+		start: addUTCHours(endDate, -1).toISOString(),
+		end: endDate.toISOString(),
 		sort: 'profitability',
 		direction: 'desc'
 	});

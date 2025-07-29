@@ -58,6 +58,7 @@ pnpm dev <strategy-id> <command>
 ```
 
 Where `command` is one of:
+
 - `check`: check strategy triggers to determine if strategy should generate a post
 - `render`: same as above; if _yes_, renders post content (including hosted screenshot image)
 - `post`: same as above; if _yes_, posts to Farcaster
@@ -67,7 +68,6 @@ Where `command` is one of:
 You can optionally include `--logfile <path>` as a final command line arg. This will cause output
 to be appended to the specified file (JSONL format). The log file will also be used for the bot
 post _cooldown_ feature – the bot will wait 12 hours between _period performance_ posts.
-
 
 ## Backtesting
 
@@ -84,7 +84,7 @@ the actual `trade-executor` endpoint.
 Run the following command:
 
 ```bash
-./script/backtest-serve.sh <strategy-id>
+./scripts/backtest-serve.sh <strategy-id>
 ```
 
 This will download the `metadata` and `state` files for that strategy and serve them via local web

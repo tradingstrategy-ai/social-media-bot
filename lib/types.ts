@@ -28,8 +28,8 @@ export interface PerformanceSummary {
 	timeBucket: TimeBucket;
 	start: string;
 	end: string;
+	first: string;
 	performance: number;
-	annualizedReturn: number;
 }
 
 export type PeriodPerformanceTrigger = PerformanceSummary & {

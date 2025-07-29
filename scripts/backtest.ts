@@ -37,9 +37,9 @@ function parseArgs(): [string, Date, Date] {
 	const args = process.argv.slice(2);
 
 	if (args.length !== 3) {
-		console.error('Usage: node script/backtest.ts <strategyId> <start> <end>');
+		console.error('Usage: node scripts/backtest.ts <strategyId> <start> <end>');
 		console.error(
-			'Example: node script/backtest.ts my-strategy "2024-01-15T14:00:00Z" "2024-01-17T14:00:00Z"'
+			'Example: node scripts/backtest.ts my-strategy "2024-01-15T14:00:00Z" "2024-01-17T14:00:00Z"'
 		);
 		process.exit(1);
 	}
