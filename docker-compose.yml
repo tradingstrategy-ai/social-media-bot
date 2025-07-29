@@ -1,6 +1,6 @@
 services:
   social-media-bot:
-    build: .
+    image: ghcr.io/tradingstrategy-ai/social-media-bot:${IMAGE_TAG:-latest}
     volumes:
       - ./logs:/app/logs
     env_file:

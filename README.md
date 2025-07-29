@@ -113,20 +113,33 @@ This will run the script every hour from `start-time` to `end-time` (ISO-8601 da
 
 ## Deployment
 
-The script is deployed via Docker. It is executed hourly via crontab.
+The application is deployed using Docker containers via an automated CI/CD pipeline.
 
-### Build Docker image
+### Release Process
 
-For now, there is no automated CI/CD pipeline. To build manually:
-
-```
-docker compose build
+```bash
+./scripts/release.sh
 ```
 
-To run from the Docker image:
+This script will:
 
-```
-docker compose run --rm social-media-bot <strategy-id> <command> [--logfile <path>]
+- Update the version in `package.json`
+- Create and push a version tag (e.g., `v1`, `v2`)
+- Trigger an automated Docker build via GitHub Actions
+
+### Production Deployment
+
+Once the Docker image is built, deploy to production:
+
+```bash
+ssh <prod-server>
+cd social-media-bot
+
+# deploy "latest" tag
+./scripts/update-production.sh
+
+# deploy specific version (for rollbacks)
+./scripts/update-production.sh v123
 ```
 
 ### Configure cron
@@ -137,5 +150,5 @@ strategy decision cycles tend to run at the top of the hour, it makes sense to h
 later so it can pick up the most recent decision cycle.
 
 ```crontab
-15 * * * * cd /root/social-media-bot && docker compose run --rm social-media-bot <strategy-id> post --logfile ./logs/<strategy-id>.jsonl
+20 * * * * cd /root/social-media-bot && docker compose run --rm social-media-bot <strategy-id> post --logfile ./logs/<strategy-id>.jsonl
 ```

@@ -1,4 +1,13 @@
 #!/bin/bash
+#
+# Create a new releease
+#
+# - increment version number by 1
+# - update version in package.json
+# - push a new release to Github
+# - trigger new image build
+#
+
 set -e
 
 BUILD_URL="https://github.com/tradingstrategy-ai/social-media-bot/pkgs/container/social-media-bot"
