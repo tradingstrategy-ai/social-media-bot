@@ -1,6 +1,7 @@
 services:
   social-media-bot:
     image: ghcr.io/tradingstrategy-ai/social-media-bot:${IMAGE_TAG:-latest}
+    user: ${DOCKER_USER:-nodeapp}
     volumes:
       - ./logs:/app/logs
     env_file:
