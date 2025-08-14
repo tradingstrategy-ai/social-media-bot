@@ -12,6 +12,9 @@ import { fetchStrategyData } from './strategy-client.ts';
 
 const PROFIT_THRESHOLD = 0.05;
 
+// Anything over 50% is "unusually high" - could be result of backend stats error
+const UNUSUALLY_HIGH_PROFIT_THRESHOLD = 0.5;
+
 const ONE_MINUTE = 50 * 1000;
 
 // Hours to wait between period_performance triggered posts
@@ -78,19 +81,26 @@ export async function checkPerformance(
 		if (+endDate - +performanceEndDate > 30 * ONE_MINUTE) return;
 	}
 
-	// filter - only consider 4h, 1d and 7d summaries
-	const filteredSummaries = summaries.filter((p) => p.timeBucket.match(/4h|1d|7d/));
+	const filteredSummaries = summaries.filter((p) => {
+		// filter: only consider 4h, 1d and 7d summaries
+		const validTimeframe = Boolean(p.timeBucket.match(/4h|1d|7d/));
+
+		// filter: only return values within profit thresholds
+		// prettier-ignore
+		const withinThresholds =
+			p.performance >= PROFIT_THRESHOLD &&
+			p.performance < UNUSUALLY_HIGH_PROFIT_THRESHOLD;
+
+		return validTimeframe && withinThresholds;
+	});
 
 	// get the best performing timeframe
 	filteredSummaries.sort((a, b) => b.performance - a.performance);
 	const bestTimeframe = filteredSummaries[0];
 
-	// return trigger if over threshold
-	if (bestTimeframe.performance >= PROFIT_THRESHOLD) {
-		return {
-			type: 'period_performance',
-			...bestTimeframe
-		};
+	// return performance trigger if any matches found
+	if (bestTimeframe) {
+		return { type: 'period_performance', ...bestTimeframe };
 	}
 }
 
