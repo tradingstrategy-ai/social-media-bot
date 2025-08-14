@@ -5,14 +5,14 @@ Social media bot app for [Trading Strategy strategies](https://tradingstrategy.a
 ## Getting started
 
 This is a Node JS TypeScript app. It runs using Node's built-in support for
-[erasable TypeScript](https://devblogs.microsoft.com/typescript/announcing-typescript-5-8-beta/#the---erasablesyntaxonly-option) syntax. You need Node `v24` or later.
+[erasable TypeScript](https://devblogs.microsoft.com/typescript/announcing-typescript-5-8-beta/#the---erasablesyntaxonly-option) syntax. You need Node `v24.5` or later.
 
 ### Install Node
 
-Install node `v24` however you'd like. Consider using [nvm](https://github.com/nvm-sh/nvm).
+Install node `v24.5` however you'd like. Consider using [nvm](https://github.com/nvm-sh/nvm).
 
 ```bash
-nvm install v24
+nvm install v24.5
 ```
 
 ### Enable `pnpm`
