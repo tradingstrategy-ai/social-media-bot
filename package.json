@@ -5,9 +5,9 @@
   "description": "Trading Strategy social media bot application",
   "main": "index.ts",
   "scripts": {
-    "dev": "NODE_ENV=development node index.ts",
+    "dev": "NODE_ENV=development node --env-file-if-exists=.env index.ts",
     "start": "NODE_ENV=production node index.ts",
-    "backtest": "node scripts/backtest.ts",
+    "backtest": "node --env-file-if-exists=.env scripts/backtest.ts",
     "test": "vitest",
     "test:run": "vitest run",
     "lint": "eslint .",
@@ -17,7 +17,6 @@
     "check": "pnpm format:check && pnpm lint"
   },
   "dependencies": {
-    "dotenv": "^16.5.0",
     "imagekit": "^6.0.0",
     "mockdate": "^3.0.5",
     "playwright": "^1.52.0"
