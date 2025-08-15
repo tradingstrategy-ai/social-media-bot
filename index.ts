@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import './lib/backtest.ts';
 import type { StrategyTrigger } from './lib/types.ts';
 import { parseArgs } from './lib/cli.ts';

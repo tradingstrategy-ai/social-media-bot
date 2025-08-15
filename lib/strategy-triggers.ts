@@ -69,7 +69,7 @@ export async function checkPerformance(
 	const summaries = await fetchStrategyData<PerformanceSummary[]>(
 		strategyId,
 		'period-performance',
-		{ end: endDate }
+		{ end: endDate.toISOString() }
 	);
 
 	// abort if performance summary end dete > 30 minutes stale
