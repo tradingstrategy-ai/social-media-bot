@@ -1,6 +1,6 @@
 {
   "name": "social-media-bot",
-  "version": "5",
+  "version": "6",
   "type": "module",
   "description": "Trading Strategy social media bot application",
   "main": "index.ts",
